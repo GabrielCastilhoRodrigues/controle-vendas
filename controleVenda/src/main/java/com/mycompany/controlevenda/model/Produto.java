@@ -22,6 +22,9 @@ public class Produto {
      */
     private double preco;
 
+    public Produto() {
+    }
+
     public Produto(String descricao, double preco) {
         this.descricao = descricao;
         this.preco = preco;
@@ -29,6 +32,10 @@ public class Produto {
 
     public long getCodigo() {
         return codigo;
+    }
+
+    public void setCodigo(long codigo) {
+        this.codigo = codigo;
     }
 
     public String getDescricao() {

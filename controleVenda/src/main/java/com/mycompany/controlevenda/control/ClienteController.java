@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Controller para a entidade {@link Cliente}.
  */
-public class ClienteController {
+public class ClienteController implements EntityController<Cliente>{
 
     /**
      * DAO do Cliente.
@@ -15,58 +15,42 @@ public class ClienteController {
     private final ClienteDAO clienteDao = new ClienteDAO();
 
     /**
-     * Lista todos os clientes cadastrados.
-     *
-     * @return Lista com todos os clientes cadastrados.
+     * {@inheritDoc}.
      */
-    public List<Cliente> listaClientes() {
+    @Override
+    public List<Cliente> listaTodos() {
         return clienteDao.findAll();
     }
 
     /**
-     * Retorna um Cliente com base do código informado.
-     *
-     * @param codigo Código do Cliente.
-     *
-     * @return O Cliente localizado.
+     * {@inheritDoc}.
      */
-    public Cliente retornaClientePeloCodigo(Long codigo) {
+    @Override
+    public Cliente retornaEntidadePeloCodigo(Long codigo) {
         return clienteDao.findByCodigo(codigo);
     }
 
     /**
-     * Realiza o cadastro do Cliente.
-     *
-     * @param cliente Cliente que deseja cadastrar
-     *
-     * @return <code>True</code> caso realize o cadastro. <code>False</code>
-     * caso não consiga realizar o cadastro.
+     * {@inheritDoc}.
      */
-    public boolean cadastraCliente(Cliente cliente) {
-        return clienteDao.create(cliente);
+    @Override
+    public boolean cadastraEntidade(Cliente entidade) {
+        return clienteDao.create(entidade);
     }
 
     /**
-     * Edita o Cliente.
-     *
-     * @param cliente Cliente que deseja editar.
-     *
-     * @return <code>True</code> caso realize a edição. <code>False</code> caso
-     * não consiga realizar a edição.
+     * {@inheritDoc}.
      */
-    public boolean editarCliente(Cliente cliente) {
-        return clienteDao.edit(cliente);
+    @Override
+    public boolean editarEntidade(Cliente entidade) {
+        return clienteDao.edit(entidade);
     }
 
     /**
-     * Deleta o Cliente.
-     *
-     * @param codigo Código do Cliente que deseja deletar.
-     *
-     * @return <code>True</code> caso remova o registro. <code>False</code> caso
-     * não consiga remover o registro.
+     * {@inheritDoc}.
      */
-    public boolean deleteCliente(Long codigo) {
+    @Override
+    public boolean deletarEntidade(Long codigo) {
         return clienteDao.delete(codigo);
     }
 }

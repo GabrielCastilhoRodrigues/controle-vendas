@@ -16,4 +16,6 @@ public class ValidacoesConstants {
     public static final String VALOR_DEVE_SER_MAIOR_QUE_ZERO = "O valor deve ser maior que zero";
 
     public static final String DATA_DEVE_SER_MAIOR_QUE_HOJE = "A data deve ser maior que a data atual";
+
+    public static final String VALOR_INFORMADO_INCORRETAMENTE = "O valor informado não é um numeral";
 }

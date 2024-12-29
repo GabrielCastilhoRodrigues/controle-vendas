@@ -6,6 +6,7 @@ package com.mycompany.controlevenda.view;
 
 import com.mycompany.controlevenda.constants.TitulosConstants;
 import com.mycompany.controlevenda.view.cliente.PrincipalClienteView;
+import com.mycompany.controlevenda.view.produto.PrincipalProdutoView;
 import javax.swing.JFrame;
 
 public class TelaPrincipal extends JFrame {
@@ -17,6 +18,8 @@ public class TelaPrincipal extends JFrame {
         initComponents();
 
         setTitle(TitulosConstants.CONTROLE_VENDA);
+        menuItemCliente.addActionListener(menu -> listagemCliente());
+        menuItemProduto.addActionListener(menu -> listagemProduto());
     }
 
     /**
@@ -41,11 +44,6 @@ public class TelaPrincipal extends JFrame {
         jMenu1.setText("Cadastro");
 
         menuItemCliente.setText("Cliente");
-        menuItemCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemClienteActionPerformed(evt);
-            }
-        });
         jMenu1.add(menuItemCliente);
 
         menuItemProduto.setText("Produto");
@@ -75,14 +73,19 @@ public class TelaPrincipal extends JFrame {
 
     /**
      * Chama a listagem de Cliente.
-     *
-     * @param evt Evento que chamou a operaçao.
      */
-    private void menuItemClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemClienteActionPerformed
-        PrincipalClienteView clienteView = new PrincipalClienteView();
-        clienteView.setVisible(true);
-    }//GEN-LAST:event_menuItemClienteActionPerformed
+    private void listagemCliente() {
+        PrincipalClienteView principalClienteView = new PrincipalClienteView();
+        principalClienteView.setVisible(true);
+    }
 
+    /**
+     * Chama a listagem de Produto.
+     */
+    private void listagemProduto() {
+        PrincipalProdutoView principalProdutoView = new PrincipalProdutoView();
+        principalProdutoView.setVisible(true);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;

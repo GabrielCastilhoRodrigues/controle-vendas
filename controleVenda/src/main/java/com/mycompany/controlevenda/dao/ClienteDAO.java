@@ -14,9 +14,10 @@ import java.util.logging.Logger;
 
 /**
  * DAO para as operações do Cliente.
+ *
  * @author gabri
  */
-public class ClienteDAO {
+public class ClienteDAO implements EntityDAO<Cliente> {
 
     /**
      * Conexão com o banco de dados.
@@ -36,17 +37,13 @@ public class ClienteDAO {
     /**
      * PreparedStatement para as operações no banco de dados.
      */
-    PreparedStatement operacao = null;
+    private PreparedStatement operacao = null;
 
     /**
-     * Realiza o cadastro do Cliente.
-     *
-     * @param cliente Cliente que deseja cadastrar
-     *
-     * @return <code>True</code> caso realize o cadastro. <code>False</code>
-     * caso não consiga realizar o cadastro.
+     * {@inheritDoc}
      */
-    public boolean create(Cliente cliente) {
+    @Override
+    public boolean create(Cliente entidade) {
         String insertSql = ""
                 + " INSERT INTO " + nomeTabela
                 + "     (nome, valorLimiteCompra, dataFechamentoFatura) "
@@ -58,10 +55,10 @@ public class ClienteDAO {
         try {
             operacao = conexao.prepareStatement(insertSql);
 
-            operacao.setString(1, cliente.getNome());
-            operacao.setDouble(2, cliente.getValorLimiteCompra());
-            operacao.setTimestamp(3,
-                    new Timestamp(cliente.getDataFechamentoFatura().getTime()));
+            operacao.setString(1, entidade.getNome());
+            operacao.setDouble(2, entidade.getValorLimiteCompra());
+            operacao.setTimestamp(3, new Timestamp(
+                    entidade.getDataFechamentoFatura().getTime()));
 
             operacao.executeUpdate();
             return true;
@@ -77,14 +74,10 @@ public class ClienteDAO {
     }
 
     /**
-     * Edita o Cliente.
-     *
-     * @param cliente Cliente que deseja editar.
-     *
-     * @return <code>True</code> caso realize a edição. <code>False</code> caso
-     * não consiga realizar a edição.
+     * {@inheritDoc}
      */
-    public boolean edit(Cliente cliente) {
+    @Override
+    public boolean edit(Cliente entidade) {
         String editSql = ""
                 + " UPDATE " + nomeTabela
                 + "     SET "
@@ -99,11 +92,11 @@ public class ClienteDAO {
         try {
             operacao = conexao.prepareStatement(editSql);
 
-            operacao.setString(1, cliente.getNome());
-            operacao.setDouble(2, cliente.getValorLimiteCompra());
-            operacao.setTimestamp(3,
-                    new Timestamp(cliente.getDataFechamentoFatura().getTime()));
-            operacao.setLong(4, cliente.getCodigo());
+            operacao.setString(1, entidade.getNome());
+            operacao.setDouble(2, entidade.getValorLimiteCompra());
+            operacao.setTimestamp(3, new Timestamp(
+                    entidade.getDataFechamentoFatura().getTime()));
+            operacao.setLong(4, entidade.getCodigo());
 
             operacao.executeUpdate();
             return true;
@@ -119,13 +112,9 @@ public class ClienteDAO {
     }
 
     /**
-     * Deleta o Cliente.
-     *
-     * @param codigo Código do Cliente que deseja deletar.
-     *
-     * @return <code>True</code> caso remova o registro. <code>False</code> caso
-     * não consiga remover o registro.
+     * {@inheritDoc}
      */
+    @Override
     public boolean delete(Long codigo) {
         String deleteSql = ""
                 + " DELETE FROM " + nomeTabela
@@ -150,10 +139,9 @@ public class ClienteDAO {
     }
 
     /**
-     * Lista todos os clientes cadastrados.
-     *
-     * @return Lista com todos os clientes cadastrados.
+     * {@inheritDoc}
      */
+    @Override
     public List<Cliente> findAll() {
         Connection conexao = dbConnection.conexao();
         ResultSet resultSet = null;
@@ -185,12 +173,9 @@ public class ClienteDAO {
     }
 
     /**
-     * Retorna um Cliente com base do código informado.
-     *
-     * @param codigo Código do Cliente.
-     *
-     * @return O Cliente localizado.
+     * {@inheritDoc}
      */
+    @Override
     public Cliente findByCodigo(Long codigo) {
         Connection conexao = dbConnection.conexao();
 

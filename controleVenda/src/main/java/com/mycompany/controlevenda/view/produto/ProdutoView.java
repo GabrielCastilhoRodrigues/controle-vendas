@@ -1,36 +1,34 @@
-package com.mycompany.controlevenda.view.cliente;
+package com.mycompany.controlevenda.view.produto;
 
 import com.mycompany.controlevenda.constants.ModelConstants;
 import com.mycompany.controlevenda.constants.TitulosConstants;
 import com.mycompany.controlevenda.constants.ValidacoesConstants;
-import com.mycompany.controlevenda.constants.model.ClienteConstants;
-import com.mycompany.controlevenda.control.ClienteController;
-import com.mycompany.controlevenda.model.Cliente;
+import com.mycompany.controlevenda.constants.model.ProdutoConstants;
+import com.mycompany.controlevenda.control.ProdutoController;
+import com.mycompany.controlevenda.model.Produto;
 import com.mycompanyy.controlevenda.exceptions.ValorInvalidoException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
- * View para Cadastro e Edição da entidade {@link Cliente}.
+ * View para Cadastro e Edição da entidade {@link Produto}.
  *
  * @author gabri
  */
-public class ClienteView extends JFrame {
+public class ProdutoView extends JFrame {
 
     /**
-     * Cliente presente em tela.
+     * Produto presente em tela.
      */
-    private Cliente cliente;
+    private Produto produto = null;
 
     /**
-     * Controller do Cliente.
+     * Controller do Produto.
      */
-    private final ClienteController clienteController = new ClienteController();
+    private final ProdutoController produtoController = new ProdutoController();
 
     /**
      * Variável de controle, se foi realizado Cadastro ou Edição da Entidade.
@@ -43,26 +41,20 @@ public class ClienteView extends JFrame {
     private boolean teveExcecao = false;
 
     /**
-     * DateFormat para o campo DataLimiteFechamento.
+     * Creates new form ProdutoView
      */
-    private final SimpleDateFormat dateFormat
-            = new SimpleDateFormat("dd/MM/yyyy");
-
-    /**
-     * Creates new form ClienteView
-     */
-    public ClienteView() {
+    public ProdutoView() {
         initComponents();
         init();
     }
 
     /**
-     * Cria um novo ClienteView.
+     * Cria um novo ProdutoView.
      *
-     * @param cliente Cliente com os dados para edição.
+     * @param produto Produto com os dados para edição.
      */
-    public ClienteView(Cliente cliente) {
-        this.cliente = cliente;
+    public ProdutoView(Produto produto) {
+        this.produto = produto;
 
         initComponents();
         init();
@@ -73,20 +65,16 @@ public class ClienteView extends JFrame {
      */
     private void init() {
         setTitle(TitulosConstants.CADASTRO);
-        lblNome.setText(ClienteConstants.NOME);
-        lblLimiteCompra.setText(ClienteConstants.VALOR_LIMITE_COMPRA);
-        lblDataFechamento.setText(ClienteConstants.DATA_FECHAMENTO_FATURA);
+        lblDescricao.setText(ProdutoConstants.DESCRICAO);
+        lblPreco.setText(ProdutoConstants.PRECO);
 
         btnCancelar.setText(TitulosConstants.CANCELAR);
         btnCancelar.addActionListener(btn -> cancelar());
 
-        if (cliente != null) {
-            String dateString
-                    = dateFormat.format(cliente.getDataFechamentoFatura());
-            txtNome.setText(cliente.getNome());
-            txtLimiteCompra.setText(String.valueOf(
-                    cliente.getValorLimiteCompra()).replace(".", ","));
-            txtDataFechamento.setText(dateString);
+        if (produto != null) {
+            txtDescricao.setText(produto.getDescricao());
+            txtPreco.setText(String.valueOf(produto.getPreco())
+                    .replace(".", ","));
 
             btnCadastrar.setText(TitulosConstants.EDITAR);
             btnCadastrar.addActionListener(btn -> editar());
@@ -104,35 +92,25 @@ public class ClienteView extends JFrame {
     }
 
     /**
-     * Realiza o cadastro do Cliente.
+     * Realiza o cadastro do Produto.
      */
     private void cadastrar() {
         if (camposPreenchidosCorretamente()) {
-            Cliente cliente = new Cliente();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            Produto produtoCadastro = new Produto();
+            produtoCadastro.setDescricao(txtDescricao.getText());
 
             try {
-                cliente.setNome(txtNome.getText());
-                cliente.setDataFechamentoFatura(
-                        dateFormat.parse(txtDataFechamento.getText()));
+                produtoCadastro.setPreco(converteValor(txtPreco.getText()));
+            } catch (ValorInvalidoException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
 
-                try {
-                    cliente.setValorLimiteCompra(
-                            converteValor(txtLimiteCompra.getText()));
-                } catch (ValorInvalidoException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage());
-                }
-
-                if (clienteController.cadastraEntidade(cliente)) {
-                    JOptionPane.showMessageDialog(this,
-                            ModelConstants.CADASTRO_REALIZADO_COM_SUCESSO);
-                    realizouCadastro = true;
-
-                    this.dispose();
-                }
-            } catch (ParseException ex) {
+            if (produtoController.cadastraEntidade(produtoCadastro)) {
                 JOptionPane.showMessageDialog(this,
-                        "Data inválida. Use o formato dd/MM/yyyy.");
+                        ModelConstants.CADASTRO_REALIZADO_COM_SUCESSO);
+                realizouCadastro = true;
+
+                this.dispose();
             }
         } else if (!teveExcecao) {
             JOptionPane.showMessageDialog(this,
@@ -141,34 +119,25 @@ public class ClienteView extends JFrame {
     }
 
     /**
-     * Realiza a edição do Cliente.
+     * Realiza a edição do Produto.
      */
     private void editar() {
         if (camposPreenchidosCorretamente()) {
+            produto.setDescricao(txtDescricao.getText());
+
             try {
-                cliente.setNome(txtNome.getText());
-                cliente.setDataFechamentoFatura(
-                        dateFormat.parse(txtDataFechamento.getText()));
-
-                try {
-                    cliente.setValorLimiteCompra(
-                            converteValor(txtLimiteCompra.getText()));
-                } catch (ValorInvalidoException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage());
-                }
-
-                if (clienteController.editarEntidade(cliente)) {
-                    JOptionPane.showMessageDialog(this,
-                            ModelConstants.EDICAO_REALIZADA_COM_SUCESSO);
-                    realizouCadastro = true;
-
-                    this.dispose();
-                }
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Data inválida. Use o formato dd/MM/yyyy.");
+                produto.setPreco(converteValor(txtPreco.getText()));
+            } catch (ValorInvalidoException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
             }
 
+            if (produtoController.editarEntidade(produto)) {
+                JOptionPane.showMessageDialog(this,
+                        ModelConstants.EDICAO_REALIZADA_COM_SUCESSO);
+                realizouCadastro = true;
+
+                this.dispose();
+            }
         } else if (!teveExcecao) {
             JOptionPane.showMessageDialog(this,
                     ValidacoesConstants.TODOS_CAMPOS_DEVEM_SER_PREENCHIDOS);
@@ -188,9 +157,8 @@ public class ClienteView extends JFrame {
      * preenchidos corretamente.
      */
     private boolean camposPreenchidosCorretamente() {
-        if (txtNome.getText().isBlank()
-                || txtLimiteCompra.getText().isBlank()
-                || txtDataFechamento.getText().isBlank()) {
+        if (txtDescricao.getText().isBlank()
+                || txtPreco.getText().isBlank()) {
 
             JOptionPane.showMessageDialog(this,
                     ValidacoesConstants.TODOS_CAMPOS_DEVEM_SER_PREENCHIDOS);
@@ -198,7 +166,7 @@ public class ClienteView extends JFrame {
         }
 
         try {
-            double preco = converteValor(txtLimiteCompra.getText());
+            double preco = converteValor(txtPreco.getText());
 
             if (preco <= 0) {
                 JOptionPane.showMessageDialog(this,
@@ -206,18 +174,6 @@ public class ClienteView extends JFrame {
                 return false;
             }
         } catch (ValorInvalidoException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage());
-            return false;
-        }
-
-        try {
-            if (dateFormat.parse(txtDataFechamento.getText())
-                    .before(new Date())) {
-                JOptionPane.showMessageDialog(this,
-                        ValidacoesConstants.DATA_DEVE_SER_MAIOR_QUE_HOJE);
-                return false;
-            }
-        } catch (ParseException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
             return false;
         }
@@ -259,28 +215,25 @@ public class ClienteView extends JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        lblNome = new javax.swing.JLabel();
-        txtNome = new javax.swing.JTextField();
-        lblLimiteCompra = new javax.swing.JLabel();
-        txtLimiteCompra = new javax.swing.JTextField();
-        lblDataFechamento = new javax.swing.JLabel();
-        txtDataFechamento = new javax.swing.JFormattedTextField();
+        lblDescricao = new javax.swing.JLabel();
+        txtDescricao = new javax.swing.JTextField();
+        lblPreco = new javax.swing.JLabel();
+        txtPreco = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         btnCancelar = new javax.swing.JButton();
         btnCadastrar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(450, 200));
-        setPreferredSize(new java.awt.Dimension(450, 200));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        lblNome.setText("lblNome");
+        lblDescricao.setText("lblDescricao");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(lblNome, gridBagConstraints);
+        getContentPane().add(lblDescricao, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -289,15 +242,15 @@ public class ClienteView extends JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 2.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(txtNome, gridBagConstraints);
+        getContentPane().add(txtDescricao, gridBagConstraints);
 
-        lblLimiteCompra.setText("lblLimiteCompra");
+        lblPreco.setText("lblPreco");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(lblLimiteCompra, gridBagConstraints);
+        getContentPane().add(lblPreco, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -305,28 +258,7 @@ public class ClienteView extends JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(txtLimiteCompra, gridBagConstraints);
-
-        lblDataFechamento.setText("lblDataFechamento");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(lblDataFechamento, gridBagConstraints);
-
-        try {
-            txtDataFechamento.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(txtDataFechamento, gridBagConstraints);
+        getContentPane().add(txtPreco, gridBagConstraints);
 
         btnCancelar.setText("btnCancelar");
         jPanel1.add(btnCancelar);
@@ -349,11 +281,9 @@ public class ClienteView extends JFrame {
     private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JLabel lblDataFechamento;
-    private javax.swing.JLabel lblLimiteCompra;
-    private javax.swing.JLabel lblNome;
-    private javax.swing.JFormattedTextField txtDataFechamento;
-    private javax.swing.JTextField txtLimiteCompra;
-    private javax.swing.JTextField txtNome;
+    private javax.swing.JLabel lblDescricao;
+    private javax.swing.JLabel lblPreco;
+    private javax.swing.JTextField txtDescricao;
+    private javax.swing.JTextField txtPreco;
     // End of variables declaration//GEN-END:variables
 }

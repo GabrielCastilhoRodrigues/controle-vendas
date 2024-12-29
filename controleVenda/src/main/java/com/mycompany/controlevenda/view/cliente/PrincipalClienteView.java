@@ -80,11 +80,12 @@ public class PrincipalClienteView extends JFrame {
         tableModelCliente.setNumRows(0);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-        for (Cliente cliente : clienteController.listaClientes()) {
+        for (Cliente cliente : clienteController.listaTodos()) {
             tableModelCliente.addRow(new Object[]{
                 cliente.getCodigo(),
                 cliente.getNome(),
-                cliente.getValorLimiteCompra(),
+                String.valueOf(cliente.getValorLimiteCompra())
+                .replace(".", ","),
                 dateFormat.format(cliente.getDataFechamentoFatura())
             });
         }
@@ -170,7 +171,7 @@ public class PrincipalClienteView extends JFrame {
     private void editarCliente() {
         if (tableCliente.getSelectedRow() != -1) {
             int linhaSelecionada = tableCliente.getSelectedRow();
-            Cliente cliente = clienteController.retornaClientePeloCodigo(
+            Cliente cliente = clienteController.retornaEntidadePeloCodigo(
                     Long.valueOf(tableCliente.getValueAt(linhaSelecionada, 0)
                             .toString()));
 
@@ -204,7 +205,7 @@ public class PrincipalClienteView extends JFrame {
             Long codigo = Long.valueOf(
                     tableCliente.getValueAt(linhaSelecionada, 0).toString());
 
-            if (clienteController.deleteCliente(codigo)) {
+            if (clienteController.deletarEntidade(codigo)) {
                 JOptionPane.showMessageDialog(this,
                         ModelConstants.REMOVIDO_COM_SUCESSO);
                 preencheTableCliente();
