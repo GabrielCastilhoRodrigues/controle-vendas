@@ -3,6 +3,7 @@ package com.mycompany.controlevenda.control;
 import com.mycompany.controlevenda.dao.VendaDAO;
 import com.mycompany.controlevenda.model.ItemVenda;
 import com.mycompany.controlevenda.model.Venda;
+import com.mycompanyy.controlevenda.dto.VendaPorGrupoDTO;
 import java.util.List;
 
 /**
@@ -101,4 +102,23 @@ public class VendaController implements EntityController<Venda> {
         return vendaDao.findAllByCodigoCliente(codigoCliente);
     }
 
+    /**
+     * Retorna uma lista com o valor total de Vendas realizadas por cada
+     * Cliente.
+     *
+     * @return Lista com o Cliente e o valor total de venda.
+     */
+    public List<VendaPorGrupoDTO> retornaVendaPorCliente() {
+        return vendaDao.consultaVendaPorCliente();
+    }
+
+    /**
+     * Retorna uma lista com o valor total de Vendas realizadas por cada
+     * Produto.
+     *
+     * @return Lista com o Produto e o valor total de venda.
+     */
+    public List<VendaPorGrupoDTO> retornaVendaPorProduto() {
+        return vendaDao.consultaVendaPorProduto();
+    }
 }

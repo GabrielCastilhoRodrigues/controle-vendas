@@ -1,11 +1,10 @@
 package com.mycompany.controlevenda.dao;
 
 import com.mycompany.controlevenda.control.ClienteController;
-import com.mycompany.controlevenda.control.ItemVendaController;
 import com.mycompany.controlevenda.database.DatabaseConnection;
 import com.mycompany.controlevenda.model.Cliente;
-import com.mycompany.controlevenda.model.ItemVenda;
 import com.mycompany.controlevenda.model.Venda;
+import com.mycompanyy.controlevenda.dto.VendaPorGrupoDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -267,5 +266,93 @@ public class VendaDAO implements EntityDAO<Venda> {
         }
 
         return vendas;
+    }
+
+    /**
+     * Realiza uma consulta para apresentar o valor total de Vendas realizadas
+     * por cada Cliente.
+     *
+     * @return Lista com o Cliente e o valor total de venda.
+     */
+    public List<VendaPorGrupoDTO> consultaVendaPorCliente() {
+        List<VendaPorGrupoDTO> vendasCliente = new ArrayList<>();
+        Connection conexao = dbConnection.conexao();
+
+        String consultaSQL = ""
+                + " SELECT "
+                + "	cliente.nome, "
+                + "	sum(venda.valortotal) as somaVenda "
+                + " FROM "
+                + "     venda "
+                + " JOIN cliente "
+                + "	on cliente.codigo = venda.codigoCliente "
+                + " GROUP BY "
+                + "	cliente.nome ";
+        ResultSet resultSet = null;
+
+        try {
+            operacao = conexao.prepareStatement(consultaSQL);
+            resultSet = operacao.executeQuery();
+
+            while (resultSet.next()) {
+                vendasCliente.add(new VendaPorGrupoDTO(
+                        resultSet.getString("nome"),
+                        resultSet.getBigDecimal("somaVenda"),
+                        VendaPorGrupoDTO.CLIENTE
+                )
+                );
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ItemVendaDAO.class.getName())
+                    .log(Level.SEVERE, null, e);
+        } finally {
+            DatabaseConnection.fecharConexao(conexao, operacao, resultSet);
+        }
+
+        return vendasCliente;
+    }
+
+    /**
+     * Realiza uma consulta para apresentar o valor total de Vendas realizadas
+     * para cada Produto.
+     *
+     * @return Lista com o Produto e o valor total de venda.
+     */
+    public List<VendaPorGrupoDTO> consultaVendaPorProduto() {
+        List<VendaPorGrupoDTO> vendasCliente = new ArrayList<>();
+        Connection conexao = dbConnection.conexao();
+
+        String consultaSQL = ""
+                + " SELECT "
+                + "	produto.descricao, "
+                + "	sum(itemVenda.totalItem) as somaVenda "
+                + " FROM "
+                + "     itemVenda "
+                + " JOIN produto "
+                + "	on produto.codigo = itemVenda.codigoProduto "
+                + " GROUP BY "
+                + "	produto.descricao ";
+        ResultSet resultSet = null;
+
+        try {
+            operacao = conexao.prepareStatement(consultaSQL);
+            resultSet = operacao.executeQuery();
+
+            while (resultSet.next()) {
+                vendasCliente.add(new VendaPorGrupoDTO(
+                        resultSet.getString("descricao"),
+                        resultSet.getBigDecimal("somaVenda"),
+                        VendaPorGrupoDTO.PRODUTO
+                )
+                );
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ItemVendaDAO.class.getName())
+                    .log(Level.SEVERE, null, e);
+        } finally {
+            DatabaseConnection.fecharConexao(conexao, operacao, resultSet);
+        }
+
+        return vendasCliente;
     }
 }

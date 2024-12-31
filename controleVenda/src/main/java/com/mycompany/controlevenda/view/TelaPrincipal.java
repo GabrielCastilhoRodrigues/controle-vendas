@@ -1,7 +1,12 @@
 package com.mycompany.controlevenda.view;
 
 import com.mycompany.controlevenda.constants.TitulosConstants;
+import com.mycompany.controlevenda.constants.model.ClienteConstants;
+import com.mycompany.controlevenda.constants.model.ProdutoConstants;
+import com.mycompany.controlevenda.constants.model.VendaConstants;
+import com.mycompany.controlevenda.control.VendaController;
 import com.mycompany.controlevenda.view.cliente.PrincipalClienteView;
+import com.mycompany.controlevenda.view.consulta.VendasPorGrupoView;
 import com.mycompany.controlevenda.view.produto.PrincipalProdutoView;
 import com.mycompany.controlevenda.view.venda.PrincipalVendaView;
 import javax.swing.JFrame;
@@ -15,9 +20,20 @@ public class TelaPrincipal extends JFrame {
         initComponents();
 
         setTitle(TitulosConstants.CONTROLE_VENDA);
+        menuItemProduto.setText(ProdutoConstants.PRODUTO);
+        menuItemVenda.setText(VendaConstants.VENDA);
+        menuItemCliente.setText(ClienteConstants.CLIENTE);
+        menuItemVendaPorCliente.setText(VendaConstants.VENDA_POR_CLIENTE);
+        menuItemVendaPorProduto.setText(VendaConstants.VENDA_POR_PRODUTO);
+
         menuItemCliente.addActionListener(menu -> listagemCliente());
         menuItemProduto.addActionListener(menu -> listagemProduto());
         menuItemVenda.addActionListener(menu -> listagemVenda());
+
+        menuItemVendaPorCliente.addActionListener(
+                menu -> consultaVendaPorCliente(1));
+        menuItemVendaPorProduto.addActionListener(
+                menu -> consultaVendaPorCliente(2));
     }
 
     /**
@@ -34,6 +50,9 @@ public class TelaPrincipal extends JFrame {
         menuItemCliente = new javax.swing.JMenuItem();
         menuItemProduto = new javax.swing.JMenuItem();
         menuItemVenda = new javax.swing.JMenuItem();
+        menuConsulta = new javax.swing.JMenu();
+        menuItemVendaPorCliente = new javax.swing.JMenuItem();
+        menuItemVendaPorProduto = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Controle de vendas");
@@ -51,6 +70,16 @@ public class TelaPrincipal extends JFrame {
         jMenu1.add(menuItemVenda);
 
         menuPrincipal.add(jMenu1);
+
+        menuConsulta.setText("Consulta");
+
+        menuItemVendaPorCliente.setText("menuItemVendaPorCliente");
+        menuConsulta.add(menuItemVendaPorCliente);
+
+        menuItemVendaPorProduto.setText("menuItemVendaPorProduto");
+        menuConsulta.add(menuItemVendaPorProduto);
+
+        menuPrincipal.add(menuConsulta);
 
         setJMenuBar(menuPrincipal);
 
@@ -90,11 +119,36 @@ public class TelaPrincipal extends JFrame {
         principalVendaView.setVisible(true);
     }
 
+    private void consultaVendaPorCliente(int consultaSelecionada) {
+        VendaController vendaController = new VendaController();
+
+        switch (consultaSelecionada) {
+            case 1: {
+                VendasPorGrupoView vendaPorClienteView = new VendasPorGrupoView(
+                        vendaController.retornaVendaPorCliente()
+                );
+                vendaPorClienteView.setVisible(true);
+                break;
+            }
+
+            case 2: {
+                VendasPorGrupoView vendaPorClienteView = new VendasPorGrupoView(
+                        vendaController.retornaVendaPorProduto()
+                );
+                vendaPorClienteView.setVisible(true);
+                break;
+            }
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu menuConsulta;
     private javax.swing.JMenuItem menuItemCliente;
     private javax.swing.JMenuItem menuItemProduto;
     private javax.swing.JMenuItem menuItemVenda;
+    private javax.swing.JMenuItem menuItemVendaPorCliente;
+    private javax.swing.JMenuItem menuItemVendaPorProduto;
     private javax.swing.JMenuBar menuPrincipal;
     // End of variables declaration//GEN-END:variables
 }

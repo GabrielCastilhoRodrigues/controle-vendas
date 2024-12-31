@@ -8,15 +8,18 @@ import com.mycompany.controlevenda.control.ItemVendaController;
 import com.mycompany.controlevenda.control.VendaController;
 import com.mycompany.controlevenda.model.ItemVenda;
 import com.mycompany.controlevenda.model.Venda;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -124,7 +127,6 @@ public class PrincipalVendaView extends JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelEntidade = new javax.swing.JPanel();
         panelOpcoes = new javax.swing.JPanel();
         btnCriar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
@@ -133,9 +135,6 @@ public class PrincipalVendaView extends JFrame {
         tableEntidade = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        panelEntidade.setLayout(new java.awt.BorderLayout());
-        getContentPane().add(panelEntidade, java.awt.BorderLayout.CENTER);
 
         btnCriar.setText("btnCriar");
         panelOpcoes.add(btnCriar);
@@ -245,7 +244,6 @@ public class PrincipalVendaView extends JFrame {
     private javax.swing.JButton btnCriar;
     private javax.swing.JButton btnDeletar;
     private javax.swing.JButton btnEditar;
-    private javax.swing.JPanel panelEntidade;
     private javax.swing.JPanel panelOpcoes;
     private javax.swing.JScrollPane scrollPaneEntidade;
     private javax.swing.JTable tableEntidade;

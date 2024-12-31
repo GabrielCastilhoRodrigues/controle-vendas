@@ -20,4 +20,8 @@ public class VendaConstants {
     public static final String INFORME_CLIENTE = "Informe o início do nome do Cliente";
 
     public static final String INFORME_PRODUTO = "Informe o início da descrição do Produto";
+
+    public static final String VENDA_POR_CLIENTE = "Vendas por Cliente";
+
+    public static final String VENDA_POR_PRODUTO = "Vendas por Produto";
 }
