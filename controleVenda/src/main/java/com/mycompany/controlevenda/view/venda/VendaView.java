@@ -102,6 +102,11 @@ public class VendaView extends JFrame {
     private LimiteCreditoUtilities limiteCreditoUtilities = null;
 
     /**
+     * Variável de controle para os Produtos em Edição
+     */
+    private Produto produtoEmEdicao = null;
+
+    /**
      * Creates new form ProdutoView
      */
     public VendaView() {
@@ -139,6 +144,9 @@ public class VendaView extends JFrame {
 
         btnCancelar.setText(TitulosConstants.CANCELAR);
         btnCancelar.addActionListener(btn -> cancelar());
+
+        btnEditar.setText(TitulosConstants.EDITAR);
+        btnEditar.addActionListener(btn -> editarItem());
 
         btnExcluir.setText(ItemVendaConstants.EXCLUIR_ITEM);
         btnExcluir.addActionListener(btn -> removerItem());
@@ -358,6 +366,7 @@ public class VendaView extends JFrame {
         txtQuantidade = new javax.swing.JTextField();
         btnInserir = new javax.swing.JButton();
         btnExcluir = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
 
         panelCliente.setLayout(new java.awt.BorderLayout());
 
@@ -445,8 +454,8 @@ public class VendaView extends JFrame {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -523,12 +532,18 @@ public class VendaView extends JFrame {
                 "Descrição", "Vlr. Unit.", "Qtde.", "Tot. Item"
             }
         ));
+        tableProduto.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableProdutoMouseClicked(evt);
+            }
+        });
         scrollPanelListaProduto.setViewportView(tableProduto);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 9;
+        gridBagConstraints.gridheight = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -571,9 +586,17 @@ public class VendaView extends JFrame {
 
         btnExcluir.setText("btnExcluir");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(btnExcluir, gridBagConstraints);
+
+        btnEditar.setText("btnEditar");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 9;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(btnEditar, gridBagConstraints);
 
         pack();
         setLocationRelativeTo(null);
@@ -669,6 +692,19 @@ public class VendaView extends JFrame {
             popupProduto.setVisible(false);
         }
     }//GEN-LAST:event_txtProdutoKeyReleased
+
+    private void tableProdutoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProdutoMouseClicked
+        if (tableProduto.getSelectedRow() != -1) {
+            DefaultTableModel tableModelProduto
+                    = (DefaultTableModel) tableProduto.getModel();
+
+            produtoEmEdicao
+                    = itens.get(tableProduto.getSelectedRow()).getProduto();
+            txtProduto.setText(produtoEmEdicao.getDescricao());
+            txtQuantidade.setText(tableModelProduto
+                    .getValueAt(tableProduto.getSelectedRow(), 2).toString());
+        }
+    }//GEN-LAST:event_tableProdutoMouseClicked
 
     /**
      * Ajusta a altura da List apontada.
@@ -870,9 +906,35 @@ public class VendaView extends JFrame {
         }
     }
 
+    private void editarItem() {
+        if (produtoEmEdicao != null) {
+            removerItem();
+
+            DefaultTableModel tableModelProduto
+                    = (DefaultTableModel) tableProduto.getModel();
+            ItemVenda itemVenda
+                    = insereItem(produtoEmEdicao, txtQuantidade.getText());
+
+            if (itemVenda != null) {
+                tableModelProduto.addRow(new Object[]{
+                    produtoEmEdicao.getDescricao(),
+                    produtoEmEdicao.getPreco().toString(),
+                    itemVenda.getQuantidade().toString(),
+                    itemVenda.getTotalItem()
+                });
+
+                itens.add(itemVenda);
+
+                txtProduto.setText("");
+                txtQuantidade.setText("");
+            }
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnExcluir;
     private javax.swing.JButton btnInserir;
     private javax.swing.JPanel jPanel1;
