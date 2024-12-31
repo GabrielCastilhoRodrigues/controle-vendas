@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.mycompany.controlevenda.view;
 
 import com.mycompany.controlevenda.constants.TitulosConstants;
 import com.mycompany.controlevenda.view.cliente.PrincipalClienteView;
 import com.mycompany.controlevenda.view.produto.PrincipalProdutoView;
+import com.mycompany.controlevenda.view.venda.PrincipalVendaView;
 import javax.swing.JFrame;
 
 public class TelaPrincipal extends JFrame {
@@ -20,6 +17,7 @@ public class TelaPrincipal extends JFrame {
         setTitle(TitulosConstants.CONTROLE_VENDA);
         menuItemCliente.addActionListener(menu -> listagemCliente());
         menuItemProduto.addActionListener(menu -> listagemProduto());
+        menuItemVenda.addActionListener(menu -> listagemVenda());
     }
 
     /**
@@ -85,6 +83,11 @@ public class TelaPrincipal extends JFrame {
     private void listagemProduto() {
         PrincipalProdutoView principalProdutoView = new PrincipalProdutoView();
         principalProdutoView.setVisible(true);
+    }
+
+    private void listagemVenda() {
+        PrincipalVendaView principalVendaView = new PrincipalVendaView();
+        principalVendaView.setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

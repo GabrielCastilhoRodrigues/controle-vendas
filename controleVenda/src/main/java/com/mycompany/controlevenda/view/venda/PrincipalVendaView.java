@@ -1,13 +1,19 @@
-package com.mycompany.controlevenda.view.produto;
+package com.mycompany.controlevenda.view.venda;
 
 import com.mycompany.controlevenda.constants.ModelConstants;
 import com.mycompany.controlevenda.constants.TitulosConstants;
 import com.mycompany.controlevenda.constants.ValidacoesConstants;
-import com.mycompany.controlevenda.constants.model.ProdutoConstants;
-import com.mycompany.controlevenda.control.ProdutoController;
-import com.mycompany.controlevenda.model.Produto;
+import com.mycompany.controlevenda.constants.model.VendaConstants;
+import com.mycompany.controlevenda.control.ItemVendaController;
+import com.mycompany.controlevenda.control.VendaController;
+import com.mycompany.controlevenda.model.ItemVenda;
+import com.mycompany.controlevenda.model.Venda;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -15,19 +21,18 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableRowSorter;
 
 /**
- * Listagem de Produtos cadastrados.
+ * Listagem das Venda cadastradas.
  *
  * @author gabri
  */
-public class PrincipalProdutoView extends JFrame {
+public class PrincipalVendaView extends JFrame {
 
     /**
-     * Controller do Produto.
+     * Controller do Venda.
      */
-    private final ProdutoController produtoController = new ProdutoController();
+    private final VendaController vendaController = new VendaController();
 
     /**
      * Inicia os componentes da tela.
@@ -35,7 +40,7 @@ public class PrincipalProdutoView extends JFrame {
     private void init() {
         tableEntidade.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        DefaultTableModel tableModelProduto = new DefaultTableModel() {
+        DefaultTableModel tableModelVenda = new DefaultTableModel() {
 
             /**
              * {@inheritDoc}
@@ -46,35 +51,34 @@ public class PrincipalProdutoView extends JFrame {
             }
         };
 
-        tableModelProduto.addColumn("Código");
-        tableModelProduto.addColumn("Descrição");
-        tableModelProduto.addColumn("Preço");
+        tableModelVenda.addColumn("Código");
+        tableModelVenda.addColumn("Cliente");
+        tableModelVenda.addColumn("Valor Total");
+        tableModelVenda.addColumn("Data Venda");
 
-        tableEntidade.setModel(tableModelProduto);
-
-        //Cria uma ordenação para o JTable
-        tableEntidade.setRowSorter(new TableRowSorter(tableModelProduto));
+        tableEntidade.setModel(tableModelVenda);
 
         //Define o tamanho das colunas do JTable.
-        TableColumnModel tableColumnModelProduto
+        TableColumnModel tableColumnModelVenda
                 = tableEntidade.getColumnModel();
 
-        tableColumnModelProduto.getColumn(0).setPreferredWidth(80);
-        tableColumnModelProduto.getColumn(1).setPreferredWidth(270);
-        tableColumnModelProduto.getColumn(2).setPreferredWidth(100);
+        tableColumnModelVenda.getColumn(0).setPreferredWidth(60);
+        tableColumnModelVenda.getColumn(1).setPreferredWidth(210);
+        tableColumnModelVenda.getColumn(2).setPreferredWidth(80);
+        tableColumnModelVenda.getColumn(3).setPreferredWidth(100);
 
         //Define que os registros irão aparecer centralizados.
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
         cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 0; i < tableColumnModelProduto.getColumnCount(); i++) {
-            tableColumnModelProduto.getColumn(i).setCellRenderer(cellRenderer);
+        for (int i = 0; i < tableColumnModelVenda.getColumnCount(); i++) {
+            tableColumnModelVenda.getColumn(i).setCellRenderer(cellRenderer);
         }
 
         btnCriar.setText(TitulosConstants.CRIAR);
         btnEditar.setText(TitulosConstants.EDITAR);
         btnDeletar.setText(TitulosConstants.DELETAR);
-        setTitle(ProdutoConstants.PRODUTO);
+        setTitle(VendaConstants.VENDA);
 
         btnCriar.addActionListener(btn -> criar());
         btnEditar.addActionListener(btn -> editar());
@@ -87,23 +91,26 @@ public class PrincipalProdutoView extends JFrame {
      * Preenche a tabela presente em tela.
      */
     private void preencheTable() {
-        DefaultTableModel tableModelProduto
+        DefaultTableModel tableModelVenda
                 = (DefaultTableModel) tableEntidade.getModel();
-        tableModelProduto.setNumRows(0);
+        tableModelVenda.setNumRows(0);
+        DateTimeFormatter dateTimeFormatter
+                        = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        for (Produto produto : produtoController.listaTodos()) {
-            tableModelProduto.addRow(new Object[]{
-                produto.getCodigo(),
-                produto.getDescricao(),
-                String.valueOf(produto.getPreco()).replace(".", ",")
+        for (Venda venda : vendaController.listaTodos()) {
+            tableModelVenda.addRow(new Object[]{
+                venda.getCodigo(),
+                venda.getCliente().getNome(),
+                String.valueOf(venda.getValorTotal()).replace(".", ","),
+                dateTimeFormatter.format(venda.getDataVenda()),
             });
         }
     }
 
     /**
-     * Creates new form ProdutoView
+     * Creates new form VendaView
      */
-    public PrincipalProdutoView() {
+    public PrincipalVendaView() {
         initComponents();
         init();
     }
@@ -147,10 +154,9 @@ public class PrincipalProdutoView extends JFrame {
 
             },
             new String [] {
-                "Código", "Descrição", "Preço"
+                "Código", "Cliente", "Valor Total", "Data Venda"
             }
         ));
-        tableEntidade.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollPaneEntidade.setViewportView(tableEntidade);
 
         getContentPane().add(scrollPaneEntidade, java.awt.BorderLayout.CENTER);
@@ -160,42 +166,51 @@ public class PrincipalProdutoView extends JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Chama a tela de cadastro de Produto.
+     * Chama a tela de cadastro da Venda.
      */
     private void criar() {
-        ProdutoView produtoView = new ProdutoView();
-        produtoView.addWindowListener(new WindowAdapter() {
+        VendaView vendaView = new VendaView();
+        vendaView.addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent windowEvent) {
-                if (produtoView.isRealizouCadastro()) {
+                if (vendaView.isRealizouCadastro()) {
                     preencheTable();
                 }
             }
         });
 
-        produtoView.setVisible(true);
+        vendaView.setVisible(true);
     }
 
     /**
-     * Chama a tela de edição de Produto.
+     * Chama a tela de edição da Venda.
      */
     private void editar() {
         if (tableEntidade.getSelectedRow() != -1) {
             int linhaSelecionada = tableEntidade.getSelectedRow();
-            Produto produto = produtoController.retornaEntidadePeloCodigo(
+            Venda venda = vendaController.retornaEntidadePeloCodigo(
                     Long.valueOf(tableEntidade.getValueAt(linhaSelecionada, 0)
                             .toString()));
 
-            if (produto != null) {
-                ProdutoView produtoView = new ProdutoView(produto);
-                produtoView.addWindowListener(new WindowAdapter() {
+            if (venda != null) {
+                ItemVendaController itemVendaController
+                        = new ItemVendaController();
+                List<ItemVenda> itens = itemVendaController
+                        .retornaEntidadePeloCodigoVenda(venda.getCodigo());
+
+                if (!itens.isEmpty()) {
+                    venda.setItensVenda(itens);
+                }
+
+                VendaView vendaView = new VendaView(venda);
+                vendaView.addWindowListener(new WindowAdapter() {
                     public void windowClosed(WindowEvent windowEvent) {
-                        if (produtoView.isRealizouCadastro()) {
+                        if (vendaView.isRealizouCadastro()) {
                             preencheTable();
                         }
                     }
                 });
 
-                produtoView.setVisible(true);
+                vendaView.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this,
                         ValidacoesConstants.REGISTRO_NAO_ENCONTRADO);
@@ -207,7 +222,7 @@ public class PrincipalProdutoView extends JFrame {
     }
 
     /**
-     * Deleta o Produto selecionado.
+     * Deleta a Venda selecionada.
      */
     private void deletar() {
         if (tableEntidade.getSelectedRow() != -1) {
@@ -215,7 +230,7 @@ public class PrincipalProdutoView extends JFrame {
             Long codigo = Long.valueOf(
                     tableEntidade.getValueAt(linhaSelecionada, 0).toString());
 
-            if (produtoController.deletarEntidade(codigo)) {
+            if (vendaController.deletarEntidade(codigo)) {
                 JOptionPane.showMessageDialog(this,
                         ModelConstants.REMOVIDO_COM_SUCESSO);
                 preencheTable();

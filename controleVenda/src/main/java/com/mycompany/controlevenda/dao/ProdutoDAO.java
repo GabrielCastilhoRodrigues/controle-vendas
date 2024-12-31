@@ -55,7 +55,7 @@ public class ProdutoDAO implements EntityDAO<Produto> {
             operacao = conexao.prepareStatement(insertSql);
 
             operacao.setString(1, entidade.getDescricao());
-            operacao.setDouble(2, entidade.getPreco());
+            operacao.setBigDecimal(2, entidade.getPreco());
 
             operacao.executeUpdate();
             return true;
@@ -89,7 +89,7 @@ public class ProdutoDAO implements EntityDAO<Produto> {
             operacao = conexao.prepareStatement(editSql);
 
             operacao.setString(1, entidade.getDescricao());
-            operacao.setDouble(2, entidade.getPreco());
+            operacao.setBigDecimal(2, entidade.getPreco());
             operacao.setLong(3, entidade.getCodigo());
 
             operacao.executeUpdate();
@@ -150,7 +150,7 @@ public class ProdutoDAO implements EntityDAO<Produto> {
                 produto.setCodigo(resultSet.getInt("codigo"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setPreco(
-                        resultSet.getDouble("preco"));
+                        resultSet.getBigDecimal("preco"));
 
                 produtos.add(produto);
             }
@@ -186,7 +186,7 @@ public class ProdutoDAO implements EntityDAO<Produto> {
                 produto.setCodigo(resultSet.getInt("codigo"));
                 produto.setDescricao(resultSet.getString("descricao"));
                 produto.setPreco(
-                        resultSet.getDouble("preco"));
+                        resultSet.getBigDecimal("preco"));
             }
         } catch (SQLException e) {
             Logger.getLogger(ProdutoDAO.class.getName())
@@ -196,5 +196,43 @@ public class ProdutoDAO implements EntityDAO<Produto> {
         }
 
         return produto;
+    }
+
+    /**
+     * Busca por Clientes que contenham o nome parecido com o informado.
+     *
+     * @param descricao Nome que está procurando
+     *
+     * @return Lista com os Clientes que possuam o nome parecido
+     */
+    public List<Produto> retornaEntidadePorNomeParecido(String descricao) {
+        Connection conexao = dbConnection.conexao();
+
+        String consultaSQL = SELECT_QUERY
+                + " where UPPER(descricao) like UPPER('%" + descricao + "%')";
+        ResultSet resultSet = null;
+        List<Produto> produtos = new ArrayList<>();
+
+        try {
+            operacao = conexao.prepareStatement(consultaSQL);
+            resultSet = operacao.executeQuery();
+
+            while (resultSet.next()) {
+                Produto produto = new Produto();
+                produto.setCodigo(resultSet.getInt("codigo"));
+                produto.setDescricao(resultSet.getString("descricao"));
+                produto.setPreco(
+                        resultSet.getBigDecimal("preco"));
+
+                produtos.add(produto);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ClienteDAO.class.getName())
+                    .log(Level.SEVERE, null, e);
+        } finally {
+            DatabaseConnection.fecharConexao(conexao, operacao, resultSet);
+        }
+
+        return produtos;
     }
 }

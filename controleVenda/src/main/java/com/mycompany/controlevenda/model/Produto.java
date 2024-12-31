@@ -1,5 +1,7 @@
 package com.mycompany.controlevenda.model;
 
+import java.math.BigDecimal;
+
 /**
  * Entidade Produto.
  *
@@ -20,12 +22,12 @@ public class Produto {
     /**
      * Preço do Produto.
      */
-    private double preco;
+    private BigDecimal preco;
 
     public Produto() {
     }
 
-    public Produto(String descricao, double preco) {
+    public Produto(String descricao, BigDecimal preco) {
         this.descricao = descricao;
         this.preco = preco;
     }
@@ -46,11 +48,11 @@ public class Produto {
         this.descricao = descricao;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(double preco) {
+    public void setPreco(BigDecimal preco) {
         this.preco = preco;
     }
 }

@@ -19,6 +19,8 @@ public class TitulosConstants {
 
     public static final String CADASTRO = "Cadastro";
 
+    public static final String INSERIR = "Inserir";
+
     public static final String PRODUTO = "Produto";
 
     public static final String VENDA = "Venda";

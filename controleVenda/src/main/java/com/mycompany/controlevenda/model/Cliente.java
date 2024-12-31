@@ -1,6 +1,6 @@
 package com.mycompany.controlevenda.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Entidade Cliente.
@@ -27,13 +27,13 @@ public class Cliente {
     /**
      * Data de fechamento da fatura do cliente.
      */
-    private Date dataFechamentoFatura;
+    private LocalDate dataFechamentoFatura;
 
     public Cliente() {
     }
 
     public Cliente(String nome, double valorLimiteCompra,
-            Date dataFechamentoFatura) {
+            LocalDate dataFechamentoFatura) {
         this.nome = nome;
         this.valorLimiteCompra = valorLimiteCompra;
         this.dataFechamentoFatura = dataFechamentoFatura;
@@ -63,11 +63,11 @@ public class Cliente {
         this.valorLimiteCompra = valorLimiteCompra;
     }
 
-    public Date getDataFechamentoFatura() {
+    public LocalDate getDataFechamentoFatura() {
         return dataFechamentoFatura;
     }
 
-    public void setDataFechamentoFatura(Date dataFechamentoFatura) {
+    public void setDataFechamentoFatura(LocalDate dataFechamentoFatura) {
         this.dataFechamentoFatura = dataFechamentoFatura;
     }
 }

@@ -9,6 +9,7 @@ import com.mycompany.controlevenda.model.Cliente;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -36,8 +37,23 @@ public class PrincipalClienteView extends JFrame {
     private void init() {
         tableCliente.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        DefaultTableModel tableModelCliente
-                = (DefaultTableModel) tableCliente.getModel();
+        DefaultTableModel tableModelCliente = new DefaultTableModel() {
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public boolean isCellEditable(final int row, final int column) {
+                return false;
+            }
+        };
+
+        tableModelCliente.addColumn("Código");
+        tableModelCliente.addColumn("Nome");
+        tableModelCliente.addColumn("Limite de Compra");
+        tableModelCliente.addColumn("Fechamento Fatura");
+
+        tableCliente.setModel(tableModelCliente);
 
         //Cria uma ordenação para o JTable
         tableCliente.setRowSorter(new TableRowSorter(tableModelCliente));
@@ -78,7 +94,8 @@ public class PrincipalClienteView extends JFrame {
         DefaultTableModel tableModelCliente
                 = (DefaultTableModel) tableCliente.getModel();
         tableModelCliente.setNumRows(0);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter dateTimeFormatter
+                = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         for (Cliente cliente : clienteController.listaTodos()) {
             tableModelCliente.addRow(new Object[]{
@@ -86,7 +103,7 @@ public class PrincipalClienteView extends JFrame {
                 cliente.getNome(),
                 String.valueOf(cliente.getValorLimiteCompra())
                 .replace(".", ","),
-                dateFormat.format(cliente.getDataFechamentoFatura())
+                dateTimeFormatter.format(cliente.getDataFechamentoFatura())
             });
         }
     }

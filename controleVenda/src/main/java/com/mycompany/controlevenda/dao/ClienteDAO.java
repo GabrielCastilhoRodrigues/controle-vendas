@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,8 +58,9 @@ public class ClienteDAO implements EntityDAO<Cliente> {
 
             operacao.setString(1, entidade.getNome());
             operacao.setDouble(2, entidade.getValorLimiteCompra());
-            operacao.setTimestamp(3, new Timestamp(
-                    entidade.getDataFechamentoFatura().getTime()));
+            operacao.setTimestamp(3, Timestamp.valueOf(
+                    entidade.getDataFechamentoFatura()
+                            .atTime(LocalTime.MIDNIGHT)));
 
             operacao.executeUpdate();
             return true;
@@ -94,8 +96,9 @@ public class ClienteDAO implements EntityDAO<Cliente> {
 
             operacao.setString(1, entidade.getNome());
             operacao.setDouble(2, entidade.getValorLimiteCompra());
-            operacao.setTimestamp(3, new Timestamp(
-                    entidade.getDataFechamentoFatura().getTime()));
+            operacao.setTimestamp(3, Timestamp.valueOf(
+                    entidade.getDataFechamentoFatura()
+                            .atTime(LocalTime.MIDNIGHT)));
             operacao.setLong(4, entidade.getCodigo());
 
             operacao.executeUpdate();
@@ -157,8 +160,9 @@ public class ClienteDAO implements EntityDAO<Cliente> {
                 cliente.setNome(resultSet.getString("nome"));
                 cliente.setValorLimiteCompra(
                         resultSet.getDouble("valorLimiteCompra"));
-                cliente.setDataFechamentoFatura(
-                        resultSet.getDate("dataFechamentoFatura"));
+                cliente.setDataFechamentoFatura(resultSet
+                        .getTimestamp("dataFechamentoFatura")
+                        .toLocalDateTime().toLocalDate());
 
                 clientes.add(cliente);
             }
@@ -196,8 +200,9 @@ public class ClienteDAO implements EntityDAO<Cliente> {
                 cliente.setNome(resultSet.getString("nome"));
                 cliente.setValorLimiteCompra(
                         resultSet.getDouble("valorLimiteCompra"));
-                cliente.setDataFechamentoFatura(
-                        resultSet.getDate("dataFechamentoFatura"));
+                cliente.setDataFechamentoFatura(resultSet
+                        .getTimestamp("dataFechamentoFatura")
+                        .toLocalDateTime().toLocalDate());
             }
         } catch (SQLException e) {
             Logger.getLogger(ClienteDAO.class.getName())
@@ -207,5 +212,47 @@ public class ClienteDAO implements EntityDAO<Cliente> {
         }
 
         return cliente;
+    }
+
+    /**
+     * Busca por Clientes que contenham o nome parecido com o informado.
+     *
+     * @param nome Nome que está procurando
+     *
+     * @return Lista com os Clientes que possuam o nome parecido
+     */
+    public List<Cliente> retornaEntidadePorNomeParecido(String nome) {
+        Connection conexao = dbConnection.conexao();
+
+        String consultaSQL = SELECT_QUERY
+                + " where UPPER(nome) like UPPER('%" + nome + "%')";
+        ResultSet resultSet = null;
+        List<Cliente> clientes = new ArrayList<>();
+
+        try {
+            operacao = conexao.prepareStatement(consultaSQL);
+            resultSet = operacao.executeQuery();
+
+            while (resultSet.next()) {
+                Cliente cliente = new Cliente();
+
+                cliente.setCodigo(resultSet.getInt("codigo"));
+                cliente.setNome(resultSet.getString("nome"));
+                cliente.setValorLimiteCompra(
+                        resultSet.getDouble("valorLimiteCompra"));
+                cliente.setDataFechamentoFatura(resultSet
+                        .getTimestamp("dataFechamentoFatura")
+                        .toLocalDateTime().toLocalDate());
+
+                clientes.add(cliente);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ClienteDAO.class.getName())
+                    .log(Level.SEVERE, null, e);
+        } finally {
+            DatabaseConnection.fecharConexao(conexao, operacao, resultSet);
+        }
+
+        return clientes;
     }
 }

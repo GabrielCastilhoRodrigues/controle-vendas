@@ -10,6 +10,8 @@ import com.mycompanyy.controlevenda.exceptions.ValorInvalidoException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.JFrame;
@@ -81,8 +83,10 @@ public class ClienteView extends JFrame {
         btnCancelar.addActionListener(btn -> cancelar());
 
         if (cliente != null) {
-            String dateString
-                    = dateFormat.format(cliente.getDataFechamentoFatura());
+            DateTimeFormatter dateTimeFormatter
+                    = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String dateString = dateTimeFormatter
+                    .format(cliente.getDataFechamentoFatura());
             txtNome.setText(cliente.getNome());
             txtLimiteCompra.setText(String.valueOf(
                     cliente.getValorLimiteCompra()).replace(".", ","));
@@ -109,30 +113,23 @@ public class ClienteView extends JFrame {
     private void cadastrar() {
         if (camposPreenchidosCorretamente()) {
             Cliente cliente = new Cliente();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
+            DateTimeFormatter dateTimeFormatter
+                    = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            cliente.setDataFechamentoFatura(LocalDate.parse(
+                    txtDataFechamento.getText(), dateTimeFormatter));
             try {
-                cliente.setNome(txtNome.getText());
-                cliente.setDataFechamentoFatura(
-                        dateFormat.parse(txtDataFechamento.getText()));
+                cliente.setValorLimiteCompra(
+                        converteValor(txtLimiteCompra.getText()));
+            } catch (ValorInvalidoException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
 
-                try {
-                    cliente.setValorLimiteCompra(
-                            converteValor(txtLimiteCompra.getText()));
-                } catch (ValorInvalidoException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage());
-                }
-
-                if (clienteController.cadastraEntidade(cliente)) {
-                    JOptionPane.showMessageDialog(this,
-                            ModelConstants.CADASTRO_REALIZADO_COM_SUCESSO);
-                    realizouCadastro = true;
-
-                    this.dispose();
-                }
-            } catch (ParseException ex) {
+            if (clienteController.cadastraEntidade(cliente)) {
                 JOptionPane.showMessageDialog(this,
-                        "Data inválida. Use o formato dd/MM/yyyy.");
+                        ModelConstants.CADASTRO_REALIZADO_COM_SUCESSO);
+                realizouCadastro = true;
+
+                this.dispose();
             }
         } else if (!teveExcecao) {
             JOptionPane.showMessageDialog(this,
@@ -145,30 +142,26 @@ public class ClienteView extends JFrame {
      */
     private void editar() {
         if (camposPreenchidosCorretamente()) {
+            cliente.setNome(txtNome.getText());
+            DateTimeFormatter dateTimeFormatter
+                    = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            cliente.setDataFechamentoFatura(LocalDate.parse(
+                    txtDataFechamento.getText(), dateTimeFormatter));
+
             try {
-                cliente.setNome(txtNome.getText());
-                cliente.setDataFechamentoFatura(
-                        dateFormat.parse(txtDataFechamento.getText()));
-
-                try {
-                    cliente.setValorLimiteCompra(
-                            converteValor(txtLimiteCompra.getText()));
-                } catch (ValorInvalidoException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage());
-                }
-
-                if (clienteController.editarEntidade(cliente)) {
-                    JOptionPane.showMessageDialog(this,
-                            ModelConstants.EDICAO_REALIZADA_COM_SUCESSO);
-                    realizouCadastro = true;
-
-                    this.dispose();
-                }
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Data inválida. Use o formato dd/MM/yyyy.");
+                cliente.setValorLimiteCompra(
+                        converteValor(txtLimiteCompra.getText()));
+            } catch (ValorInvalidoException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
             }
 
+            if (clienteController.editarEntidade(cliente)) {
+                JOptionPane.showMessageDialog(this,
+                        ModelConstants.EDICAO_REALIZADA_COM_SUCESSO);
+                realizouCadastro = true;
+
+                this.dispose();
+            }
         } else if (!teveExcecao) {
             JOptionPane.showMessageDialog(this,
                     ValidacoesConstants.TODOS_CAMPOS_DEVEM_SER_PREENCHIDOS);
@@ -192,6 +185,8 @@ public class ClienteView extends JFrame {
                 || txtLimiteCompra.getText().isBlank()
                 || txtDataFechamento.getText().isBlank()) {
 
+            teveExcecao = true;
+
             JOptionPane.showMessageDialog(this,
                     ValidacoesConstants.TODOS_CAMPOS_DEVEM_SER_PREENCHIDOS);
             return false;
@@ -201,11 +196,13 @@ public class ClienteView extends JFrame {
             double preco = converteValor(txtLimiteCompra.getText());
 
             if (preco <= 0) {
+                teveExcecao = true;
                 JOptionPane.showMessageDialog(this,
                         ValidacoesConstants.VALOR_DEVE_SER_MAIOR_QUE_ZERO);
                 return false;
             }
         } catch (ValorInvalidoException e) {
+            teveExcecao = true;
             JOptionPane.showMessageDialog(this, e.getMessage());
             return false;
         }
@@ -213,11 +210,13 @@ public class ClienteView extends JFrame {
         try {
             if (dateFormat.parse(txtDataFechamento.getText())
                     .before(new Date())) {
+                teveExcecao = true;
                 JOptionPane.showMessageDialog(this,
                         ValidacoesConstants.DATA_DEVE_SER_MAIOR_QUE_HOJE);
                 return false;
             }
         } catch (ParseException e) {
+            teveExcecao = true;
             JOptionPane.showMessageDialog(this, e.getMessage());
             return false;
         }

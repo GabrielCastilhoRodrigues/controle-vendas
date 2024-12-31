@@ -53,4 +53,16 @@ public class ProdutoController implements EntityController<Produto> {
     public boolean deletarEntidade(Long codigo) {
         return produtoDao.delete(codigo);
     }
+
+    /**
+     * Realiza a busca por Produtos que contenham uma descrição parecida com o
+     * informado.
+     *
+     * @param descricao Descrição que está procurando.
+     *
+     * @return Lista com os Produtos que possuam a descrição parecida.
+     */
+    public List<Produto> retornaEntidadePorNomeParecido(String descricao) {
+        return produtoDao.retornaEntidadePorNomeParecido(descricao);
+    }
 }

@@ -7,7 +7,10 @@ import com.mycompany.controlevenda.constants.model.ProdutoConstants;
 import com.mycompany.controlevenda.control.ProdutoController;
 import com.mycompany.controlevenda.model.Produto;
 import com.mycompanyy.controlevenda.exceptions.ValorInvalidoException;
-import java.text.NumberFormat;
+import com.mycompanyy.controlevenda.utilities.NumberUtilities;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.JFrame;
@@ -166,9 +169,9 @@ public class ProdutoView extends JFrame {
         }
 
         try {
-            double preco = converteValor(txtPreco.getText());
+            BigDecimal preco = converteValor(txtPreco.getText());
 
-            if (preco <= 0) {
+            if (NumberUtilities.greatherThanZero(preco)) {
                 JOptionPane.showMessageDialog(this,
                         ValidacoesConstants.VALOR_DEVE_SER_MAIOR_QUE_ZERO);
                 return false;
@@ -188,21 +191,29 @@ public class ProdutoView extends JFrame {
      *
      * @return O valor já convertido.
      */
-    private Double converteValor(String valorInformado)
+    private BigDecimal converteValor(String valorInformado)
             throws ValorInvalidoException {
-        NumberFormat format = NumberFormat.getInstance(
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(
                 new Locale.Builder().setLanguage("pt").setRegion("BR").build());
+        decimalFormatSymbols.setDecimalSeparator(',');
+        decimalFormatSymbols.setGroupingSeparator('.');
+        
+        DecimalFormat decimalFormat =
+                new DecimalFormat("#,##0.00", decimalFormatSymbols);
+        
         Number preco = null;
+        BigDecimal precoConvertido = BigDecimal.ZERO;
 
         try {
-            preco = format.parse(valorInformado);
+            preco = decimalFormat.parse(valorInformado);
+            precoConvertido = BigDecimal.valueOf(preco.doubleValue());
         } catch (ParseException e) {
             teveExcecao = true;
             throw new ValorInvalidoException(
                     ValidacoesConstants.VALOR_INFORMADO_INCORRETAMENTE);
         }
 
-        return preco == null ? 0.0 : preco.doubleValue();
+        return precoConvertido;
     }
 
     /**

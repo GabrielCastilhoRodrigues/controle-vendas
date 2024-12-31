@@ -1,7 +1,16 @@
 package com.mycompany.controlevenda.model;
 
+import com.mycompany.controlevenda.constants.ValidacoesConstants;
+import com.mycompany.controlevenda.constants.model.ItemVendaConstants;
+import com.mycompanyy.controlevenda.utilities.NumberUtilities;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Entidade Venda.
+ *
  * @author gabri
  */
 public class Venda {
@@ -14,49 +23,68 @@ public class Venda {
     /**
      * Código do Cliente vinculado a Venda.
      */
-    private long codigoCliente;
+    private Cliente cliente;
 
     /**
-     * Código do Produto vinculado a Venda.
+     * Data que foi realizada a venda.
      */
-    private long codigoProduto;
+    private LocalDate dataVenda;
 
     /**
      * Valor total da Venda.
      */
-    private double valorTotal;
+    private BigDecimal valorTotal;
 
-    public Venda(long codigoCliente, long codigoProduto, double valorTotal) {
-        this.codigoCliente = codigoCliente;
-        this.codigoProduto = codigoProduto;
-        this.valorTotal = valorTotal;
+    /**
+     * Itens presentes na venda.
+     */
+    private List<ItemVenda> itensVenda = new ArrayList<>();
+
+    public Venda() {
+    }
+
+    public Venda(Cliente cliente) {
+        this.cliente = cliente;
+        this.dataVenda = LocalDate.now();
     }
 
     public long getCodigo() {
         return codigo;
     }
 
-    public long getCodigoCliente() {
-        return codigoCliente;
+    public void setCodigo(long codigo) {
+        this.codigo = codigo;
     }
 
-    public void setCodigoCliente(long codigoCliente) {
-        this.codigoCliente = codigoCliente;
+    public LocalDate getDataVenda() {
+        return dataVenda;
     }
 
-    public long getCodigoProduto() {
-        return codigoProduto;
+    public void setDataVenda(LocalDate dataVenda) {
+        this.dataVenda = dataVenda;
     }
 
-    public void setCodigoProduto(long codigoProduto) {
-        this.codigoProduto = codigoProduto;
-    }
-
-    public double getValorTotal() {
+    public BigDecimal getValorTotal() {
         return valorTotal;
     }
 
-    public void setValorTotal(double valorTotal) {
+    public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public List<ItemVenda> getItensVenda() {
+        return itensVenda;
+    }
+
+    public void setItensVenda(List<ItemVenda> itensVenda) {
+        this.itensVenda = itensVenda;
     }
 }
